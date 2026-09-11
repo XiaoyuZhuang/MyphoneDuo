@@ -1,4 +1,4 @@
-import base from './index.js';
+import base from './worker.js';
 
 const PHYSICS_PATCH = String.raw`<script>
 (function(){
@@ -14,10 +14,10 @@ const PHYSICS_PATCH = String.raw`<script>
 
   function readRoll(e){
     var a = ((orientationAngle() % 360) + 360) % 360;
-    if(a === 90) return -(e.beta || 0);
-    if(a === 270) return (e.beta || 0);
-    if(a === 180) return -(e.gamma || 0);
-    return e.gamma || 0;
+    if(a === 90) return (e.beta || 0);
+    if(a === 270) return -(e.beta || 0);
+    if(a === 180) return (e.gamma || 0);
+    return -(e.gamma || 0);
   }
 
   function resetOwnBaseline(){
@@ -34,7 +34,7 @@ const PHYSICS_PATCH = String.raw`<script>
     if(delta > 38) delta = 38;
     if(delta < -38) delta = -38;
 
-    // Responsive low-pass filter only; no angle amplification.
+    // Only smooth sensor noise. Angle magnitude stays essentially 1:1.
     ownSmooth += (delta - ownSmooth) * 0.24;
     var dead = Math.abs(ownSmooth) < 0.55 ? 0 : ownSmooth;
 
@@ -52,14 +52,13 @@ const PHYSICS_PATCH = String.raw`<script>
         return;
       }
 
-      // Keep whatever pivot/direction the current corrected build selected,
-      // but replace the exaggerated magnitude with approximately 1:1 physical tilt.
+      // Preserve the already-corrected pivot and rotation direction from worker.js.
       var currentAngle = parseFloat(getComputedStyle(root).getPropertyValue('--screen-angle')) || 0;
       var sign = currentAngle < 0 ? -1 : 1;
       var physicalAngle = Math.min(Math.abs(dead), 34);
       root.style.setProperty('--screen-angle', (sign * physicalAngle).toFixed(2) + 'deg');
 
-      // Blur grows gently with real tilt instead of racing ahead of the hand.
+      // Edge defocus follows the real angle gently rather than being amplified.
       var p = Math.min(Math.abs(dead) / 30, 1);
       var soft = Math.min(1, p * 0.92);
       var mid = Math.min(1, Math.max(0, (p - 0.18) / 0.82));
