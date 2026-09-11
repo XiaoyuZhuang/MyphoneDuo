@@ -1,167 +1,53 @@
 const html = `<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-<meta name="theme-color" content="#0d1b2a" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#101827">
 <title>Myphone Duo</title>
 <style>
-  :root {
-    --tilt: 0;
-    --shift-x: 0px;
-    --edge-left: 0;
-    --edge-right: 0;
-  }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { width:100%; height:100%; margin:0; overflow:hidden; background:#06111c; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif; }
-  body { touch-action: pan-x; }
-  .viewport {
-    position:fixed; inset:0; overflow:hidden; background:#071421;
-  }
-  .wallpaper {
-    position:absolute; inset:-7%;
-    background:
-      radial-gradient(circle at 18% 22%, rgba(99,177,255,.42), transparent 28%),
-      radial-gradient(circle at 80% 18%, rgba(183,117,255,.35), transparent 32%),
-      radial-gradient(circle at 70% 78%, rgba(255,105,180,.25), transparent 30%),
-      linear-gradient(145deg,#0a1b2d 0%,#17375a 38%,#34245f 70%,#14182b 100%);
-    transform: translate3d(calc(var(--shift-x) * .22),0,0) scale(1.06);
-    filter:saturate(1.1);
-  }
-  .desktop {
-    position:absolute; inset:0;
-    transform: translate3d(var(--shift-x),0,0);
-    will-change: transform;
-    transition: transform 70ms linear;
-  }
-  .status {
-    height:48px; padding:12px 18px 0; display:flex; justify-content:space-between; align-items:flex-start;
-    color:white; font-size:14px; font-weight:600; text-shadow:0 1px 8px rgba(0,0,0,.35);
-  }
-  .status .right { display:flex; gap:8px; opacity:.95; }
-  .pages-wrap { position:absolute; left:0; right:0; top:54px; bottom:106px; overflow:hidden; }
-  .pages { height:100%; display:flex; transition: transform .36s cubic-bezier(.22,.86,.28,1); will-change: transform; }
-  .page { min-width:100%; padding:12px 20px 16px; display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:min-content; gap:22px 15px; align-content:start; }
-  .app { display:flex; flex-direction:column; align-items:center; gap:7px; color:white; font-size:12px; text-shadow:0 2px 8px rgba(0,0,0,.45); user-select:none; }
-  .icon { width:min(15vw,66px); aspect-ratio:1; border-radius:22%; display:grid; place-items:center; font-size:min(8vw,34px); box-shadow: inset 0 1px 0 rgba(255,255,255,.34), 0 8px 22px rgba(0,0,0,.2); backdrop-filter:blur(5px); }
-  .i1{background:linear-gradient(145deg,#58b8ff,#3478f6)} .i2{background:linear-gradient(145deg,#71e29a,#24a957)} .i3{background:linear-gradient(145deg,#ff7992,#e73659)}
-  .i4{background:linear-gradient(145deg,#ffd266,#f29b22)} .i5{background:linear-gradient(145deg,#8e8dff,#5d5ee9)} .i6{background:linear-gradient(145deg,#3fd7e7,#1696b1)}
-  .i7{background:linear-gradient(145deg,#f2f2f2,#bfc5cc);color:#222} .i8{background:linear-gradient(145deg,#353d4d,#121821)}
-  .dock { position:absolute; left:14px; right:14px; bottom:max(12px,env(safe-area-inset-bottom)); height:82px; border-radius:30px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.22); backdrop-filter:blur(26px) saturate(1.4); display:flex; align-items:center; justify-content:space-around; padding:0 12px; }
-  .dock .icon { width:58px; max-width:16vw; }
-  .dots { position:absolute; bottom:91px; left:0; right:0; display:flex; justify-content:center; gap:7px; }
-  .dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.42); }
-  .dot.active { background:white; }
-  .edge { position:absolute; top:0; bottom:0; width:28vw; pointer-events:none; z-index:5; opacity:0; filter:blur(10px); }
-  .edge.left { left:-5vw; background:linear-gradient(90deg,rgba(2,8,14,.96) 0%,rgba(4,12,20,.65) 20%,rgba(20,30,45,.18) 58%,rgba(20,30,45,0) 100%); opacity:var(--edge-left); }
-  .edge.right { right:-5vw; background:linear-gradient(270deg,rgba(2,8,14,.96) 0%,rgba(4,12,20,.65) 20%,rgba(20,30,45,.18) 58%,rgba(20,30,45,0) 100%); opacity:var(--edge-right); }
-  .edge::after { content:""; position:absolute; inset:0; backdrop-filter:blur(18px); mask-image:linear-gradient(to right,black,transparent); }
-  .edge.right::after { mask-image:linear-gradient(to left,black,transparent); }
-  .permission {
-    position:absolute; z-index:20; left:50%; top:50%; transform:translate(-50%,-50%); width:min(88vw,380px); padding:20px; border-radius:28px;
-    background:rgba(10,18,28,.72); color:white; text-align:center; backdrop-filter:blur(28px) saturate(1.25); border:1px solid rgba(255,255,255,.16); box-shadow:0 20px 60px rgba(0,0,0,.35);
-  }
-  .permission h1{font-size:23px;margin:0 0 8px}.permission p{opacity:.78;font-size:14px;line-height:1.55;margin:0 0 16px}
-  .permission button{border:0;border-radius:16px;padding:12px 18px;font-size:15px;font-weight:700;background:white;color:#0f1720}
-  .hidden{display:none}
-  .debug{position:absolute;z-index:30;right:8px;top:52px;color:#fff9;font:11px/1.3 monospace;background:#0004;padding:6px 8px;border-radius:9px;display:none}
+:root{--shift:0px;--left:0;--right:0}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#07111d;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{touch-action:pan-x}.v{position:fixed;inset:0;overflow:hidden;background:#091522}.wall{position:absolute;inset:-8%;background:radial-gradient(circle at 18% 20%,#5aaeff77,transparent 28%),radial-gradient(circle at 82% 22%,#b772ff66,transparent 31%),radial-gradient(circle at 68% 82%,#ff77bb44,transparent 30%),linear-gradient(145deg,#09182a,#173a61 40%,#382564 72%,#141727);transform:translate3d(calc(var(--shift)*.2),0,0) scale(1.08);will-change:transform}.desk{position:absolute;inset:0;transform:translate3d(var(--shift),0,0);transition:transform 70ms linear;will-change:transform}.status{height:48px;padding:12px 18px 0;display:flex;justify-content:space-between;color:#fff;font-size:14px;font-weight:650;text-shadow:0 1px 8px #0007}.pagesWrap{position:absolute;left:0;right:0;top:54px;bottom:108px;overflow:hidden}.pages{height:100%;display:flex;transition:transform .36s cubic-bezier(.22,.86,.28,1);will-change:transform}.page{min-width:100%;padding:12px 20px;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:min-content;gap:22px 15px;align-content:start}.app{display:flex;flex-direction:column;align-items:center;gap:7px;color:#fff;font-size:12px;text-shadow:0 2px 8px #0008;pointer-events:none;user-select:none}.icon{width:min(15vw,66px);aspect-ratio:1;border-radius:22%;display:grid;place-items:center;font-size:min(8vw,34px);box-shadow:inset 0 1px 0 #ffffff55,0 8px 22px #0004}.b{background:linear-gradient(145deg,#58b8ff,#3478f6)}.g{background:linear-gradient(145deg,#71e29a,#24a957)}.r{background:linear-gradient(145deg,#ff7992,#e73659)}.y{background:linear-gradient(145deg,#ffd266,#f29b22)}.p{background:linear-gradient(145deg,#9c91ff,#5d5ee9)}.c{background:linear-gradient(145deg,#3fd7e7,#1696b1)}.k{background:linear-gradient(145deg,#3c4555,#121821)}.w{background:linear-gradient(145deg,#fff,#bcc4cc);color:#222}.dock{position:absolute;left:14px;right:14px;bottom:max(12px,env(safe-area-inset-bottom));height:82px;border-radius:30px;background:#ffffff29;border:1px solid #ffffff38;backdrop-filter:blur(26px) saturate(1.4);display:flex;align-items:center;justify-content:space-around;padding:0 12px}.dock .icon{width:58px;max-width:16vw}.dots{position:absolute;bottom:93px;left:0;right:0;display:flex;justify-content:center;gap:7px}.dot{width:6px;height:6px;border-radius:50%;background:#ffffff6b}.dot.on{background:#fff}.edge{position:absolute;top:0;bottom:0;width:31vw;z-index:5;pointer-events:none;filter:blur(11px);opacity:0}.edge.l{left:-6vw;background:linear-gradient(90deg,#02080ff7,#07111cb8 24%,#15233c33 62%,transparent);opacity:var(--left)}.edge.r{right:-6vw;background:linear-gradient(270deg,#02080ff7,#07111cb8 24%,#15233c33 62%,transparent);opacity:var(--right)}.edge:after{content:"";position:absolute;inset:0;backdrop-filter:blur(19px);-webkit-mask-image:linear-gradient(to right,#000,transparent);mask-image:linear-gradient(to right,#000,transparent)}.edge.r:after{-webkit-mask-image:linear-gradient(to left,#000,transparent);mask-image:linear-gradient(to left,#000,transparent)}.permit{position:absolute;z-index:20;left:50%;top:50%;transform:translate(-50%,-50%);width:min(88vw,380px);padding:20px;border-radius:28px;background:#0a121cba;color:#fff;text-align:center;backdrop-filter:blur(28px) saturate(1.25);border:1px solid #ffffff29;box-shadow:0 20px 60px #0006}.permit h1{font-size:23px;margin:0 0 8px}.permit p{opacity:.8;font-size:14px;line-height:1.55;margin:0 0 16px}.permit button{border:0;border-radius:16px;padding:12px 18px;font-size:15px;font-weight:700;background:#fff;color:#101820}.hide{display:none}
 </style>
 </head>
 <body>
-<div class="viewport" id="viewport">
-  <div class="wallpaper"></div>
-  <div class="desktop" id="desktop">
-    <div class="status"><div id="clock">9:41</div><div class="right"><span>◔</span><span>⌁</span><span>▰</span></div></div>
-    <div class="pages-wrap" id="pagesWrap">
-      <div class="pages" id="pages">
-        <section class="page">
-          <div class="app"><div class="icon i1">☁</div><span>天气</span></div><div class="app"><div class="icon i2">✆</div><span>电话</span></div><div class="app"><div class="icon i3">♥</div><span>健康</span></div><div class="app"><div class="icon i4">☀</div><span>照片</span></div>
-          <div class="app"><div class="icon i5">✦</div><span>音乐</span></div><div class="app"><div class="icon i6">◎</div><span>浏览器</span></div><div class="app"><div class="icon i7">◷</div><span>时钟</span></div><div class="app"><div class="icon i8">⚙</div><span>设置</span></div>
-          <div class="app"><div class="icon i2">✉</div><span>信息</span></div><div class="app"><div class="icon i4">◫</div><span>日历</span></div><div class="app"><div class="icon i1">⌖</div><span>地图</span></div><div class="app"><div class="icon i5">◉</div><span>相机</span></div>
-        </section>
-        <section class="page">
-          <div class="app"><div class="icon i6">⌁</div><span>文件</span></div><div class="app"><div class="icon i3">♫</div><span>播客</span></div><div class="app"><div class="icon i1">↻</div><span>同步</span></div><div class="app"><div class="icon i8">◈</div><span>工具</span></div>
-          <div class="app"><div class="icon i4">✎</div><span>备忘录</span></div><div class="app"><div class="icon i2">✓</div><span>提醒</span></div><div class="app"><div class="icon i5">★</div><span>收藏</span></div><div class="app"><div class="icon i7">☰</div><span>阅读</span></div>
-        </section>
-      </div>
-    </div>
-    <div class="dots"><span class="dot active"></span><span class="dot"></span></div>
-    <div class="dock"><div class="icon i2">✆</div><div class="icon i6">◎</div><div class="icon i3">♫</div><div class="icon i1">✉</div></div>
-  </div>
-  <div class="edge left"></div><div class="edge right"></div>
-  <div class="permission" id="permission"><h1>Myphone Duo</h1><p>点击启用动作感应。左右倾斜手机时，桌面会尽量保持视觉位置稳定，同时倾斜侧边缘逐渐虚化、隐去。</p><button id="startMotion">启用动作感应</button></div>
-  <div class="debug" id="debug"></div>
+<div class="v">
+ <div class="wall"></div>
+ <div class="desk">
+  <div class="status"><span id="clock">9:41</span><span>◔　⌁　▰</span></div>
+  <div class="pagesWrap" id="wrap"><div class="pages" id="pages">
+   <section class="page">
+    <div class="app"><div class="icon b">☁</div><span>天气</span></div><div class="app"><div class="icon g">✆</div><span>电话</span></div><div class="app"><div class="icon r">♥</div><span>健康</span></div><div class="app"><div class="icon y">☀</div><span>照片</span></div>
+    <div class="app"><div class="icon p">✦</div><span>音乐</span></div><div class="app"><div class="icon c">◎</div><span>浏览器</span></div><div class="app"><div class="icon w">◷</div><span>时钟</span></div><div class="app"><div class="icon k">⚙</div><span>设置</span></div>
+    <div class="app"><div class="icon g">✉</div><span>信息</span></div><div class="app"><div class="icon y">◫</div><span>日历</span></div><div class="app"><div class="icon b">⌖</div><span>地图</span></div><div class="app"><div class="icon p">◉</div><span>相机</span></div>
+   </section>
+   <section class="page">
+    <div class="app"><div class="icon c">⌁</div><span>文件</span></div><div class="app"><div class="icon r">♫</div><span>播客</span></div><div class="app"><div class="icon b">↻</div><span>同步</span></div><div class="app"><div class="icon k">◈</div><span>工具</span></div>
+    <div class="app"><div class="icon y">✎</div><span>备忘录</span></div><div class="app"><div class="icon g">✓</div><span>提醒</span></div><div class="app"><div class="icon p">★</div><span>收藏</span></div><div class="app"><div class="icon w">☰</div><span>阅读</span></div>
+   </section>
+  </div></div>
+  <div class="dots"><i class="dot on"></i><i class="dot"></i></div>
+  <div class="dock"><div class="icon g">✆</div><div class="icon c">◎</div><div class="icon r">♫</div><div class="icon b">✉</div></div>
+ </div>
+ <div class="edge l"></div><div class="edge r"></div>
+ <div class="permit" id="permit"><h1>Myphone Duo</h1><p>点击启用动作感应。左右倾斜手机时，桌面会做反向补偿，倾斜侧边缘逐渐虚化并隐去。</p><button id="go">启用动作感应</button></div>
 </div>
 <script>
-(() => {
-  const root = document.documentElement;
-  const permission = document.getElementById('permission');
-  const btn = document.getElementById('startMotion');
-  const pages = document.getElementById('pages');
-  const dots = [...document.querySelectorAll('.dot')];
-  const wrap = document.getElementById('pagesWrap');
-  let baseline = null, smooth = 0;
-  let startX = null, drag = 0, page = 0;
-
-  function applyTilt(gammaRaw){
-    if (gammaRaw == null || Number.isNaN(gammaRaw)) return;
-    if (baseline == null) baseline = gammaRaw;
-    let gamma = gammaRaw - baseline;
-    if (gamma > 35) gamma = 35; if (gamma < -35) gamma = -35;
-    smooth += (gamma - smooth) * 0.12;
-    const dead = Math.abs(smooth) < 1.2 ? 0 : smooth;
-    const p = Math.min(Math.abs(dead) / 24, 1);
-    const shift = -dead * 1.55;
-    root.style.setProperty('--shift-x', shift.toFixed(2) + 'px');
-    root.style.setProperty('--edge-left', dead < 0 ? Math.pow(p, .8).toFixed(3) : '0');
-    root.style.setProperty('--edge-right', dead > 0 ? Math.pow(p, .8).toFixed(3) : '0');
-  }
-
-  function handler(e){ applyTilt(e.gamma); }
-
-  async function enableMotion(){
-    try {
-      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-        const state = await DeviceOrientationEvent.requestPermission();
-        if (state !== 'granted') throw new Error('permission denied');
-      }
-      window.addEventListener('deviceorientation', handler, true);
-      permission.classList.add('hidden');
-    } catch (e) {
-      permission.querySelector('p').textContent = '没有获得动作感应权限。请检查浏览器的运动与方向访问权限后重试。';
-    }
-  }
-  btn.addEventListener('click', enableMotion);
-
-  wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; drag = 0; pages.style.transition='none'; }, {passive:true});
-  wrap.addEventListener('touchmove', e => {
-    if (startX == null) return;
-    drag = e.touches[0].clientX - startX;
-    pages.style.transform = `translateX(calc(${-page*100}% + ${drag}px))`;
-  }, {passive:true});
-  wrap.addEventListener('touchend', () => {
-    pages.style.transition='transform .36s cubic-bezier(.22,.86,.28,1)';
-    if (Math.abs(drag) > innerWidth * .16) page = Math.max(0, Math.min(1, page + (drag < 0 ? 1 : -1)));
-    pages.style.transform = `translateX(${-page*100}%)`;
-    dots.forEach((d,i)=>d.classList.toggle('active',i===page)); startX=null; drag=0;
-  });
-
-  const clock = document.getElementById('clock');
-  const updateClock = () => { const d = new Date(); clock.textContent = d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); };
-  updateClock(); setInterval(updateClock, 30000);
+(function(){
+ var root=document.documentElement,permit=document.getElementById('permit'),go=document.getElementById('go'),pages=document.getElementById('pages'),wrap=document.getElementById('wrap'),dots=[].slice.call(document.querySelectorAll('.dot'));
+ var base=null,smooth=0,startX=null,drag=0,page=0;
+ function tilt(raw){if(raw==null||Number.isNaN(raw))return;if(base==null)base=raw;var g=Math.max(-35,Math.min(35,raw-base));smooth+=(g-smooth)*.12;var d=Math.abs(smooth)<1.2?0:smooth,p=Math.min(Math.abs(d)/24,1),shift=-d*1.55;root.style.setProperty('--shift',shift.toFixed(2)+'px');root.style.setProperty('--left',d<0?Math.pow(p,.8).toFixed(3):'0');root.style.setProperty('--right',d>0?Math.pow(p,.8).toFixed(3):'0')}
+ async function enable(){try{if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){var s=await DeviceOrientationEvent.requestPermission();if(s!=='granted')throw new Error('denied')}if(typeof DeviceOrientationEvent==='undefined')throw new Error('unsupported');window.addEventListener('deviceorientation',function(e){tilt(e.gamma)},true);permit.classList.add('hide')}catch(e){permit.querySelector('p').textContent='没有获得动作感应权限，或当前浏览器不支持。请检查浏览器的运动与方向访问权限后重试。'}}
+ go.addEventListener('click',enable);
+ wrap.addEventListener('touchstart',function(e){startX=e.touches[0].clientX;drag=0;pages.style.transition='none'},{passive:true});
+ wrap.addEventListener('touchmove',function(e){if(startX==null)return;drag=e.touches[0].clientX-startX;pages.style.transform='translateX(calc('+(-page*100)+'% + '+drag+'px))'},{passive:true});
+ wrap.addEventListener('touchend',function(){pages.style.transition='transform .36s cubic-bezier(.22,.86,.28,1)';if(Math.abs(drag)>innerWidth*.16)page=Math.max(0,Math.min(1,page+(drag<0?1:-1)));pages.style.transform='translateX('+(-page*100)+'%)';dots.forEach(function(d,i){d.classList.toggle('on',i===page)});startX=null;drag=0});
+ var clock=document.getElementById('clock');function tick(){clock.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}tick();setInterval(tick,30000);
 })();
 </script>
-</body>
-</html>`;
+</body></html>`;
 
 export default {
-  async fetch() {
-    return new Response(html, {
-      headers: {
-        'content-type': 'text/html; charset=UTF-8',
-        'cache-control': 'no-store',
-        'permissions-policy': 'accelerometer=(self), gyroscope=(self)'
-      }
-    });
-  }
+ async fetch(){
+  return new Response(html,{headers:{'content-type':'text/html; charset=UTF-8','cache-control':'no-store','permissions-policy':'accelerometer=(self), gyroscope=(self)'}});
+ }
 };
