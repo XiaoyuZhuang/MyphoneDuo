@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "myphone-duo",
-  "main": "src/app-v2.js",
+  "main": "src/webgl-safe.js",
   "compatibility_date": "2026-09-11"
 }
