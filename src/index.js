@@ -12,6 +12,13 @@ const html = String.raw`<!doctype html>
     --left-fold:0;
     --right-fold:0;
     --hinge-glow:0;
+    --hinge-opacity:.18;
+    --left-brightness:1;--right-brightness:1;
+    --left-saturation:1;--right-saturation:1;
+    --left-soft:0;--right-soft:0;
+    --left-strong:0;--right-strong:0;
+    --left-edge:.12;--right-edge:.12;
+    --left-hinge:0;--right-hinge:0;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#05070a;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
@@ -19,11 +26,11 @@ const html = String.raw`<!doctype html>
   .viewport{position:fixed;inset:0;overflow:hidden;background:#05070a;perspective:760px;perspective-origin:50% 50%;isolation:isolate}
   .world-bg{position:absolute;inset:-14%;background:radial-gradient(circle at 50% 44%,#30343d 0%,#141820 33%,#080a0f 61%,#030405 100%);transform:translateZ(-120px) scale(1.2)}
   .rear-glass{position:absolute;inset:0;background:linear-gradient(100deg,#080b10 0%,#10141b 43%,#06080c 49%,#171b22 54%,#080b10 100%);opacity:.86}
-  .hinge-core{position:absolute;z-index:1;left:50%;top:-3%;bottom:-3%;width:9px;transform:translateX(-50%) translateZ(-4px);border-radius:10px;background:linear-gradient(90deg,#090a0d,#565c67 42%,#14171d 58%,#030405);box-shadow:0 0 24px rgba(0,0,0,.8),0 0 14px rgba(255,255,255,.08);opacity:calc(.18 + var(--hinge-glow) * .72)}
+  .hinge-core{position:absolute;z-index:1;left:50%;top:-3%;bottom:-3%;width:9px;transform:translateX(-50%) translateZ(-4px);border-radius:10px;background:linear-gradient(90deg,#090a0d,#565c67 42%,#14171d 58%,#030405);box-shadow:0 0 24px rgba(0,0,0,.8),0 0 14px rgba(255,255,255,.08);opacity:var(--hinge-opacity)}
   .fold-stage{position:absolute;inset:0;transform-style:preserve-3d;z-index:2}
   .panel{position:absolute;top:0;bottom:0;width:50%;overflow:hidden;transform-style:preserve-3d;backface-visibility:hidden;will-change:transform;transition:transform 62ms linear,filter 62ms linear;box-shadow:0 0 0 1px rgba(255,255,255,.04) inset}
-  .panel.left{left:0;transform-origin:100% 50%;transform:rotateY(var(--left-angle));filter:brightness(calc(1 - var(--left-fold) * .16)) saturate(calc(1 - var(--left-fold) * .08));box-shadow:inset -1px 0 rgba(255,255,255,.09),-20px 0 44px rgba(0,0,0,.22)}
-  .panel.right{right:0;transform-origin:0 50%;transform:rotateY(var(--right-angle));filter:brightness(calc(1 - var(--right-fold) * .16)) saturate(calc(1 - var(--right-fold) * .08));box-shadow:inset 1px 0 rgba(255,255,255,.09),20px 0 44px rgba(0,0,0,.22)}
+  .panel.left{left:0;transform-origin:100% 50%;transform:rotateY(var(--left-angle));filter:brightness(var(--left-brightness)) saturate(var(--left-saturation));box-shadow:inset -1px 0 rgba(255,255,255,.09),-20px 0 44px rgba(0,0,0,.22)}
+  .panel.right{right:0;transform-origin:0 50%;transform:rotateY(var(--right-angle));filter:brightness(var(--right-brightness)) saturate(var(--right-saturation));box-shadow:inset 1px 0 rgba(255,255,255,.09),20px 0 44px rgba(0,0,0,.22)}
   .screen{position:absolute;top:0;width:200%;height:100%;overflow:hidden;background:#15233a;transform:translateZ(1px)}
   .panel.left .screen{left:0}
   .panel.right .screen{left:-100%}
@@ -45,17 +52,17 @@ const html = String.raw`<!doctype html>
   .panel.right .surface-falloff{opacity:var(--right-fold);background:linear-gradient(270deg,rgba(0,0,0,.72) 0%,rgba(4,7,12,.43) 16%,rgba(12,17,25,.15) 42%,rgba(0,0,0,0) 83%)}
   .surface-blur{top:-4%;bottom:-4%;width:60%;opacity:0;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);transition:opacity 62ms linear}
   .surface-blur-strong{top:-4%;bottom:-4%;width:27%;opacity:0;backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px);transition:opacity 62ms linear}
-  .panel.left .surface-blur{left:-2%;opacity:calc(var(--left-fold) * .8);-webkit-mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.86) 35%,transparent 100%);mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.86) 35%,transparent 100%)}
-  .panel.left .surface-blur-strong{left:-2%;opacity:calc(var(--left-fold) * .95);-webkit-mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.94) 52%,transparent 100%);mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.94) 52%,transparent 100%)}
-  .panel.right .surface-blur{right:-2%;opacity:calc(var(--right-fold) * .8);-webkit-mask-image:linear-gradient(270deg,#000 0%,rgba(0,0,0,.86) 35%,transparent 100%);mask-image:linear-gradient(270deg,#000 0%,rgba(0,0,0,.86) 35%,transparent 100%)}
-  .panel.right .surface-blur-strong{right:-2%;opacity:calc(var(--right-fold) * .95);-webkit-mask-image:linear-gradient(270deg,#000 0%,rgba(0,0,0,.94) 52%,transparent 100%);mask-image:linear-gradient(270deg,#000 0%,rgba(0,0,0,.94) 52%,transparent 100%)}
+  .panel.left .surface-blur{left:-2%;opacity:var(--left-soft);-webkit-mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.86) 35%,transparent 100%);mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.86) 35%,transparent 100%)}
+  .panel.left .surface-blur-strong{left:-2%;opacity:var(--left-strong);-webkit-mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.94) 52%,transparent 100%);mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.94) 52%,transparent 100%)}
+  .panel.right .surface-blur{right:-2%;opacity:var(--right-soft);-webkit-mask-image:linear-gradient(270deg,#000 0%,rgba(0,0,0,.86) 35%,transparent 100%);mask-image:linear-gradient(270deg,#000 0%,rgba(0,0,0,.86) 35%,transparent 100%)}
+  .panel.right .surface-blur-strong{right:-2%;opacity:var(--right-strong);-webkit-mask-image:linear-gradient(270deg,#000 0%,rgba(0,0,0,.94) 52%,transparent 100%);mask-image:linear-gradient(270deg,#000 0%,rgba(0,0,0,.94) 52%,transparent 100%)}
   .surface-gloss{inset:0;opacity:.18;mix-blend-mode:screen;background:linear-gradient(112deg,rgba(255,255,255,.16),transparent 28%,transparent 67%,rgba(255,255,255,.08))}
   .edge-frame{top:0;bottom:0;width:4px;background:linear-gradient(90deg,#08090b,#b7bbc3 46%,#34373d 72%,#090a0c);box-shadow:0 0 10px rgba(255,255,255,.16),0 0 18px rgba(0,0,0,.5)}
-  .panel.left .edge-frame{left:0;opacity:calc(.12 + var(--left-fold) * .88)}
-  .panel.right .edge-frame{right:0;opacity:calc(.12 + var(--right-fold) * .88)}
+  .panel.left .edge-frame{left:0;opacity:var(--left-edge)}
+  .panel.right .edge-frame{right:0;opacity:var(--right-edge)}
   .hinge-shade{position:absolute;top:0;bottom:0;width:12%;z-index:22;pointer-events:none;opacity:0;transition:opacity 62ms linear}
-  .panel.left .hinge-shade{right:0;opacity:calc(var(--left-fold) * .72);background:linear-gradient(270deg,rgba(0,0,0,.48),transparent)}
-  .panel.right .hinge-shade{left:0;opacity:calc(var(--right-fold) * .72);background:linear-gradient(90deg,rgba(0,0,0,.48),transparent)}
+  .panel.left .hinge-shade{right:0;opacity:var(--left-hinge);background:linear-gradient(270deg,rgba(0,0,0,.48),transparent)}
+  .panel.right .hinge-shade{left:0;opacity:var(--right-hinge);background:linear-gradient(90deg,rgba(0,0,0,.48),transparent)}
   .permission{position:absolute;z-index:50;left:50%;top:50%;transform:translate(-50%,-50%);width:min(88vw,390px);padding:21px;border-radius:28px;background:rgba(12,17,25,.7);color:#fff;text-align:center;backdrop-filter:blur(30px) saturate(1.25);border:1px solid rgba(255,255,255,.16);box-shadow:0 24px 70px rgba(0,0,0,.38)}
   .permission h1{font-size:23px;margin:0 0 8px}.permission p{opacity:.78;font-size:14px;line-height:1.55;margin:0 0 16px}.permission button{border:0;border-radius:16px;padding:12px 18px;font-size:15px;font-weight:720;background:#fff;color:#111820}.hidden{display:none}
   .recenter{position:absolute;z-index:40;left:50%;bottom:max(108px,calc(env(safe-area-inset-bottom) + 104px));transform:translateX(-50%);border:1px solid rgba(255,255,255,.16);background:rgba(9,13,19,.34);color:rgba(255,255,255,.72);font-size:11px;padding:7px 10px;border-radius:99px;backdrop-filter:blur(15px);opacity:0;pointer-events:none;transition:opacity .25s}.recenter.show{opacity:1;pointer-events:auto}
@@ -162,6 +169,19 @@ const html = String.raw`<!doctype html>
     root.style.setProperty('--left-fold',leftP.toFixed(3));
     root.style.setProperty('--right-fold',rightP.toFixed(3));
     root.style.setProperty('--hinge-glow',eased.toFixed(3));
+    root.style.setProperty('--hinge-opacity',(.18+eased*.72).toFixed(3));
+    root.style.setProperty('--left-brightness',(1-leftP*.16).toFixed(3));
+    root.style.setProperty('--right-brightness',(1-rightP*.16).toFixed(3));
+    root.style.setProperty('--left-saturation',(1-leftP*.08).toFixed(3));
+    root.style.setProperty('--right-saturation',(1-rightP*.08).toFixed(3));
+    root.style.setProperty('--left-soft',(leftP*.8).toFixed(3));
+    root.style.setProperty('--right-soft',(rightP*.8).toFixed(3));
+    root.style.setProperty('--left-strong',(leftP*.95).toFixed(3));
+    root.style.setProperty('--right-strong',(rightP*.95).toFixed(3));
+    root.style.setProperty('--left-edge',(.12+leftP*.88).toFixed(3));
+    root.style.setProperty('--right-edge',(.12+rightP*.88).toFixed(3));
+    root.style.setProperty('--left-hinge',(leftP*.72).toFixed(3));
+    root.style.setProperty('--right-hinge',(rightP*.72).toFixed(3));
   }
 
   function tick(){
